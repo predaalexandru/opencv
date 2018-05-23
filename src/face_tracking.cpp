@@ -27,13 +27,9 @@ int main() {
 	Mat grayscaleFrame;
 	Mat save_img;
 
-	//Mat blur;
-	//Mat canny;
-	//Mat imgBlurred;
 
 	namedWindow("Aplicatie Face Tracking", 1);
-	//namedWindow("Webcam Canny", 2);
-
+	
 	while (true)
 	{
 		captura >> imagine;
@@ -53,18 +49,14 @@ int main() {
 			rectangle(imagine, pt1, pt2, cvScalar(0, 255, 0, 0), 1, 8, 0);
 		}
 
-		//GaussianBlur(grayscaleFrame, imgBlurred, Size(5 , 5), 1.8);
-		//Canny(imgBlurred, canny, 1, 50);
 
 		if (save_img.empty())
 		{
-			std::cerr << "Something is wrong with the webcam, could not get frame." << std::endl;
+			cout << "Ceva este in neregula cu webcam-ul, nu am putut face poza" << endl;
 		}
-		// Save the frame into a file
 		imwrite("C:/Users/Alex/Documents/GitHub/opencv/data/test.jpg", save_img);
 
 		imshow("Aplicatie Face Tracking", imagine);
-		//imshow("Webcam Canny", imagine);
 
 		int tasta = waitKey(1);
 		if (tasta == 27)
