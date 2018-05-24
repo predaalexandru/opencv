@@ -46,7 +46,7 @@ int main()
 		
 		cvtColor(imagine, gray_imagine, CV_BGR2GRAY);
 		equalizeHist(gray_imagine, gray_imagine);
-		fata_clasificator.detectMultiScale(gray_imagine, fata, 1.1, 3, CV_HAAR_SCALE_IMAGE | CV_HAAR_DO_CANNY_PRUNING, cvSize(0, 0), cvSize(300, 300));
+		fata_clasificator.detectMultiScale(gray_imagine, fata, 1.1, 3, CV_HAAR_SCALE_IMAGE | CV_HAAR_DO_CANNY_PRUNING, cvSize(300, 300));
 		for (int i = 0; i < fata.size(); i++)
 		{
 			Point pt1(fata[i].x + fata[i].width, fata[i].y + fata[i].height);
