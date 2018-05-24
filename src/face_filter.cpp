@@ -1,3 +1,4 @@
+#include "opencv2/opencv.hpp"
 #include "opencv2/objdetect.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
@@ -12,49 +13,66 @@ using namespace cv;
 /** @function main */
 int main()
 {
-	CascadeClassifier face_cascade, eye_cascade;
-	if (!face_cascade.load("C:/opencv/sources/data/haarcascades/haarcascade_frontalface_alt2.xml")) {
-		printf("Error loading cascade file for face");
-		return 1;
+	CascadeClassifier fata_clasificator, ochi_clasificator;
+	if (!fata_clasificator.load("C:/opencv/sources/data/haarcascades/haarcascade_frontalface_alt2.xml")) {
+		cout << "Nu am putut deschide fisierul!" << endl;
+		getchar();
+		return 0;
 	}
-	if (!eye_cascade.load("C:/opencv/sources/data/haarcascades/haarcascade_eye.xml")) {
-		printf("Error loading cascade file for eye");
-		return 1;
+	if (!ochi_clasificator.load("C:/opencv/sources/data/haarcascades/haarcascade_eye.xml")) {
+		cout << "Nu am putut deschide fisierul!" << endl;
+		getchar();
+		return 0;
 	}
-	VideoCapture capture(0); //-1, 0, 1 device id
-	if (!capture.isOpened())
+	VideoCapture captura;
+	if (!captura.open(0))
 	{
-		printf("error to initialize camera");
-		return 1;
+		cout << "Nu am putut deschide camera!" << endl;
+		getchar();
+		return 0;
 	}
-	Mat cap_img, gray_img;
-	vector<Rect> faces, eyes;
+
+	Mat imagine;
+	Mat	gray_imagine;
+	Mat save_img;
+	vector<Rect> fata, ochi;
+
+	namedWindow("Aplicatie Face Tracking", 1);
+
 	while (1)
 	{
-		capture >> cap_img;
-		waitKey(10);
-		cvtColor(cap_img, gray_img, CV_BGR2GRAY);
-		cv::equalizeHist(gray_img, gray_img);
-		face_cascade.detectMultiScale(gray_img, faces, 1.1, 10, CV_HAAR_SCALE_IMAGE | CV_HAAR_DO_CANNY_PRUNING, cvSize(0, 0), cvSize(300, 300));
-		for (int i = 0; i < faces.size(); i++)
+		captura >> imagine;
+		captura >> save_img;
+		
+		cvtColor(imagine, gray_imagine, CV_BGR2GRAY);
+		equalizeHist(gray_imagine, gray_imagine);
+		fata_clasificator.detectMultiScale(gray_imagine, fata, 1.1, 3, CV_HAAR_SCALE_IMAGE | CV_HAAR_DO_CANNY_PRUNING, cvSize(0, 0), cvSize(300, 300));
+		for (int i = 0; i < fata.size(); i++)
 		{
-			Point pt1(faces[i].x + faces[i].width, faces[i].y + faces[i].height);
-			Point pt2(faces[i].x, faces[i].y);
-			Mat faceROI = gray_img(faces[i]);
-			eye_cascade.detectMultiScale(faceROI, eyes, 1.1, 2, 0 | CV_HAAR_SCALE_IMAGE, Size(30, 30));
-			for (size_t j = 0; j< eyes.size(); j++)
+			Point pt1(fata[i].x + fata[i].width, fata[i].y + fata[i].height);
+			Point pt2(fata[i].x, fata[i].y);
+
+			Mat faceROI = gray_imagine(fata[i]);
+			ochi_clasificator.detectMultiScale(faceROI, ochi, 1.1, 2, 0 | CV_HAAR_SCALE_IMAGE, Size(30, 30));
+			for (size_t j = 0; j< ochi.size(); j++)
 			{
-				//Point center(faces[i].x+eyes[j].x+eyes[j].width*0.5, faces[i].y+eyes[j].y+eyes[j].height*0.5);
-				Point center(faces[i].x + eyes[j].x + eyes[j].width*0.5, faces[i].y + eyes[j].y + eyes[j].height*0.5);
-				int radius = cvRound((eyes[j].width + eyes[j].height)*0.25);
-				circle(cap_img, center, radius, Scalar(255, 0, 0), 2, 8, 0);
+				Point center(fata[i].x + ochi[j].x + ochi[j].width*0.5, fata[i].y + ochi[j].y + ochi[j].height*0.5);
+				int radius = cvRound((ochi[j].width + ochi[j].height)*0.25);
+				circle(imagine, center, radius, Scalar(255, 0, 0), 2, 8, 0);
 			}
-			rectangle(cap_img, pt1, pt2, cvScalar(0, 255, 0), 2, 8, 0);
+			rectangle(imagine, pt1, pt2, cvScalar(0, 255, 0), 2, 8, 0);
 		}
-		imshow("Result", cap_img);
-		waitKey(3);
-		char c = waitKey(3);
-		if (c == 27)
+
+		if (save_img.empty())
+		{
+			cout << "Ceva este in neregula cu webcam-ul, nu am putut face poza" << endl;
+		}
+		imwrite("C:/Users/Alex/Documents/GitHub/opencv/data/test.jpg", save_img);
+
+		imshow("Aplicatie Face Tracking", imagine);
+		
+		int tasta = waitKey(1);
+		if (tasta == 27)
 			break;
 	}
 	return 0;
